@@ -7,6 +7,7 @@ class RegistrationsController < Devise::RegistrationsController
   def verify_captcha
     begin
       uri = URI.parse(ENV['CAPTCHA_VERIFY_URL'])
+      p uri
       data = {message:params["frc-captcha-solution"], application_token:ENV['CAPTCHA_APPLICATION_TOKEN']}
       header = {'Content-Type': 'text/json'}
       http = Net::HTTP.new(uri.host, uri.port)
@@ -18,7 +19,8 @@ class RegistrationsController < Devise::RegistrationsController
       response = http.request(request)
       answer =  JSON.parse(response.body)
       return true if answer["message"] == "verified"
-    rescue
+    rescue => e
+      p e
     end
     return false
   end
